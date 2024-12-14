@@ -1,0 +1,9 @@
+[submodule "master-sync-shared"]
+	path = master-sync-shared
+	url = https://git.openslx.org/bwlp/master-sync-shared.git
+[submodule "globals-to-esm"]
+	path = globals-to-esm
+	url = https://github.com/rafaelgieschke/globals-to-esm
+[submodule "thrift"]
+	path = thrift
+	url = https://github.com/apache/thrift

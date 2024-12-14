@@ -1,0 +1,27 @@
+#!/bin/sh -xeu
+self="$(realpath -- "$0")"
+selfDir="$(dirname -- "$self")"
+
+if ! test -e "$selfDir/globals-to-esm/node_modules"; then (
+  cd globals-to-esm
+  npm ci
+); fi
+
+cd -- "$(mktemp -d)"
+
+thrift -gen js:es6,ts -out . "$selfDir/master-sync-shared/src/main/thrift/bwlp.thrift"
+sed -Ei '/\bcallback\?:/d' *.d.ts
+cat *.js >bwlp.js.new
+cat *.d.ts >bwlp.d.ts.new
+rm *.js *.d.ts
+for f in *.new; do
+  mv -- "$f" "${f%.new}"
+done
+
+cp "$selfDir/thrift/lib/js/src/thrift.js" .
+"$selfDir/globals-to-esm/convert-to-esm.js" *.js
+for f in *.esm.js; do
+  mv -- "${f%.esm.js}.d.ts" "${f%.esm.js}.esm.d.ts" || :
+done
+
+cp -- *.esm.js *.d.ts "$selfDir"
